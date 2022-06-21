@@ -10,6 +10,7 @@ require 'forwardable'
 
 module OmniAuth
   module Strategies
+    # rubocop:disable Metrics/ClassLength
     class OpenIDConnect
       include OmniAuth::Strategy
       extend Forwardable
@@ -189,12 +190,12 @@ module OmniAuth
           opts[key] = request.params[key.to_s] unless opts.key?(key)
         end
 
-        client.authorization_uri(opts.reject { |_k, v| v.nil? })
-      end
+        if options.pkce
+          opts.merge!(pkce_authorize_params)
+          session['omniauth.pkce.verifier'] = options.pkce_verifier
+        end
 
-      if options.pkce
-        opts.merge!(pkce_authorize_params)
-        session['omniauth.pkce.verifier'] = options.pkce_verifier
+        client.authorization_uri(opts.reject { |_k, v| v.nil? })
       end
 
       def public_key
@@ -404,6 +405,7 @@ module OmniAuth
         end
       end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end
 
